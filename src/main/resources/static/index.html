@@ -1,0 +1,743 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobTrack | Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #20243a;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+#notificationBell {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#unreadCount {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 7px;
+    border-radius: 50%;
+    background: white;
+    color: #2563eb;
+    font-weight: bold;
+}
+
+#notificationPanel {
+    margin-bottom: 20px;
+}
+
+.notification-item {
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.notification-item p {
+    margin: 6px 0;
+}
+
+.notification-item small {
+    color: #6b7280;
+}
+
+.notification-item button {
+    margin-top: 8px;
+    padding: 7px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        h1 {
+            color: #283593;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            margin-top: 24px;
+            box-shadow: 0 3px 14px #0000000a;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid #e8eaf3;
+        }
+
+        .stat-card p {
+            color: #6b7280;
+            font-size: 14px;
+            margin: 0 0 12px;
+        }
+
+        .stat-card h2 {
+            font-size: 30px;
+            margin: 0;
+            color: #283593;
+        }
+
+        input, select, button {
+            font: inherit;
+            padding: 12px;
+            margin: 6px 0;
+            border-radius: 7px;
+        }
+
+        input, select {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            background: white;
+        }
+
+        button {
+            background: #283593;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.88;
+        }
+
+        .delete-button {
+            background: #c62828;
+            margin-left: 8px;
+        }
+
+        .job {
+            padding: 18px 0;
+            border-bottom: 1px solid #eceef4;
+        }
+
+        .job h3 {
+            margin: 0 0 8px;
+        }
+
+        .job p {
+            color: #5f6475;
+            overflow-wrap: anywhere;
+        }
+
+        .job a {
+            display: inline-block;
+            margin: 0 0 10px;
+            color: #283593;
+        }
+
+        .message {
+            color: #283593;
+        }
+
+        .status-label {
+            display: inline-block;
+            background: #eef0ff;
+            color: #283593;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 700px) {
+            .dashboard {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 400px) {
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .stat-card {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header>
+
+        <header>
+            <div>
+                <h1>JobTrack</h1>
+                <p class="subtitle">Your job search, organized in one place.</p>
+            </div>
+
+            <button id="notificationBell" type="button">
+                🔔 Notifications
+                <span id="unreadCount">0</span>
+            </button>
+        </header>
+
+        <div id="notificationPanel" class="card" hidden>
+            <h2>Notifications</h2>
+            <div id="notificationList">Loading notifications...</div>
+        </div>
+
+    </header>
+
+    <!-- Dashboard summary cards -->
+    <section class="dashboard">
+        <div class="stat-card">
+            <p>Total Applications</p>
+            <h2 id="totalCount">0</h2>
+        </div>
+
+        <div class="stat-card">
+            <p>Interviews</p>
+            <h2 id="interviewCount">0</h2>
+        </div>
+
+        <div class="stat-card">
+            <p>Assessments</p>
+            <h2 id="assessmentCount">0</h2>
+        </div>
+
+        <div class="stat-card">
+            <p>Offers</p>
+            <h2 id="offerCount">0</h2>
+        </div>
+    </section>
+
+    <!-- Add application form -->
+    <section class="card">
+        <h2>Add Job Application</h2>
+
+        <form id="jobForm">
+            <input id="companyName"
+                   placeholder="Company name"
+                   required>
+
+            <input id="role"
+                   placeholder="Job role"
+                   required>
+
+            <select id="status">
+                <option value="Applied">Applied</option>
+                <option value="Assessment">Assessment</option>
+                <option value="Interview">Interview</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Offer">Offer</option>
+            </select>
+
+            <input id="jobLink"
+                   type="url"
+                   placeholder="Job link (optional)">
+
+            <button type="submit">+ Add Application</button>
+        </form>
+
+        <p id="formMessage" class="message"></p>
+    </section>
+
+    <!-- Applications list -->
+    <section class="card">
+        <h2>My Applications</h2>
+        <p id="applicationCount">Loading...</p>
+        <div id="jobList"></div>
+    </section>
+
+    <section class="card">
+        <h2>🏢 Company Hiring Updates</h2>
+        <p>Explore job openings and application deadlines.</p>
+        <div id="openingList">Loading hiring updates...</div>
+    </section>
+</div>
+</body>
+</html>
+
+
+</div>
+
+<script>
+    const API_URL = "/api/jobs";
+
+    async function loadJobs() {
+        const jobList = document.getElementById("jobList");
+        const count = document.getElementById("applicationCount");
+
+        try {
+            const response = await fetch(API_URL);
+
+            if (!response.ok) {
+                throw new Error("Unable to load jobs");
+            }
+
+            const jobs = await response.json();
+
+            // Update dashboard counts from the database response
+            document.getElementById("totalCount").textContent =
+                jobs.length;
+
+            document.getElementById("interviewCount").textContent =
+                jobs.filter(job => job.status === "Interview").length;
+
+            document.getElementById("assessmentCount").textContent =
+                jobs.filter(job => job.status === "Assessment").length;
+
+            document.getElementById("offerCount").textContent =
+                jobs.filter(job => job.status === "Offer").length;
+
+            count.textContent = "Total applications: " + jobs.length;
+            jobList.replaceChildren();
+
+            if (jobs.length === 0) {
+                jobList.textContent =
+                    "No applications yet. Add your first job!";
+                return;
+            }
+
+            jobs.forEach(job => {
+                const item = document.createElement("div");
+                item.className = "job";
+
+                const heading = document.createElement("h3");
+                heading.textContent =
+                    job.companyName + " — " + job.role;
+
+                const details = document.createElement("p");
+                details.textContent = "Application ID: " + job.id;
+
+                const status = document.createElement("span");
+                status.className = "status-label";
+                status.textContent = job.status;
+
+                item.append(heading, details, status);
+
+                if (job.jobLink) {
+                    const link = document.createElement("a");
+                    link.href = job.jobLink;
+                    link.target = "_blank";
+                    link.rel = "noopener noreferrer";
+                    link.textContent = "View job link";
+                    item.appendChild(document.createElement("br"));
+                    item.appendChild(link);
+                }
+
+                item.appendChild(document.createElement("br"));
+
+                // Edit application status
+                const editButton = document.createElement("button");
+                editButton.textContent = "Edit Status";
+
+                editButton.addEventListener("click", async () => {
+                    const newStatus = prompt(
+                        "Enter new status: Applied, Assessment, Interview, Rejected, or Offer",
+                        job.status
+                    );
+
+                    if (newStatus === null) return;
+
+                    const allowedStatuses = [
+                        "Applied", "Assessment", "Interview",
+                        "Rejected", "Offer"
+                    ];
+
+                    if (!allowedStatuses.includes(newStatus.trim())) {
+                        alert("Please enter a valid status exactly as listed.");
+                        return;
+                    }
+
+                    try {
+                        const updateResponse = await fetch(
+                            `${API_URL}/${job.id}`,
+                            {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    companyName: job.companyName,
+                                    role: job.role,
+                                    status: newStatus.trim(),
+                                    jobLink: job.jobLink || ""
+                                })
+                            }
+                        );
+
+                        if (!updateResponse.ok) {
+                            throw new Error("Update failed");
+                        }
+
+                        await loadJobs();
+                        alert("Application status updated!");
+                    } catch (error) {
+                        alert("Could not update status. Please try again.");
+                    }
+                });
+
+                // Delete application
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.className = "delete-button";
+
+                deleteButton.addEventListener("click", async () => {
+                    if (!confirm(
+                        "Are you sure you want to delete " +
+                        job.companyName + "?"
+                    )) {
+                        return;
+                    }
+
+                    try {
+                        const deleteResponse = await fetch(
+                            `${API_URL}/${job.id}`,
+                            { method: "DELETE" }
+                        );
+
+                        if (!deleteResponse.ok) {
+                            throw new Error("Delete failed");
+                        }
+
+                        await loadJobs();
+                        alert("Application deleted!");
+                    } catch (error) {
+                        alert("Could not delete application. Please try again.");
+                    }
+                });
+
+                item.append(editButton, deleteButton);
+                jobList.appendChild(item);
+            });
+
+        } catch (error) {
+            count.textContent = "Unable to load applications.";
+            jobList.textContent =
+                "Please check that Spring Boot is running.";
+        }
+    }
+
+    // Add a new application
+    document.getElementById("jobForm").addEventListener(
+        "submit",
+        async event => {
+            event.preventDefault();
+
+            const message = document.getElementById("formMessage");
+            message.textContent = "";
+
+            const job = {
+                companyName:
+                    document.getElementById("companyName").value.trim(),
+                role:
+                    document.getElementById("role").value.trim(),
+                status:
+                    document.getElementById("status").value,
+                jobLink:
+                    document.getElementById("jobLink").value.trim()
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(job)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Could not add application");
+                }
+
+                event.target.reset();
+                message.textContent = "Application added successfully!";
+
+                await loadJobs();
+
+            } catch (error) {
+                message.textContent =
+                    "Could not add application. Check that the server is running.";
+            }
+        }
+    );
+
+    // Load applications when the page opens
+    loadJobs();
+
+async function loadOpenings() {
+    const openingList = document.getElementById("openingList");
+
+    try {
+        const response = await fetch("/api/openings");
+
+        if (!response.ok) {
+            throw new Error("Could not load hiring updates");
+        }
+
+        const openings = await response.json();
+        openingList.replaceChildren();
+
+        if (openings.length === 0) {
+            openingList.textContent = "No hiring updates available yet.";
+            return;
+        }
+
+        openings.forEach(opening => {
+            const card = document.createElement("div");
+            card.className = "job";
+
+            const heading = document.createElement("h3");
+            heading.textContent =
+                opening.companyName + " — " + opening.role;
+
+            const location = document.createElement("p");
+            location.textContent =
+                "Location: " + (opening.location || "Not specified");
+
+            const eligibility = document.createElement("p");
+            eligibility.textContent =
+                "Eligibility: " + (opening.eligibility || "Check official listing");
+
+            const deadline = document.createElement("p");
+            deadline.textContent =
+                "Deadline: " + (opening.deadline || "Not specified");
+
+            card.append(heading, location, eligibility, deadline);
+
+            if (opening.applicationLink) {
+                const link = document.createElement("a");
+                link.href = opening.applicationLink;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.textContent = "View Official Application";
+
+                card.appendChild(link);
+            }
+
+            openingList.appendChild(card);
+        });
+
+    } catch (error) {
+        openingList.textContent =
+            "Unable to load hiring updates. Please check the server.";
+    }
+}
+
+loadOpenings();
+
+async function loadNotifications() {
+    try {
+        const response = await fetch("/api/notifications");
+        const notifications = await response.json();
+
+        const countResponse = await fetch("/api/notifications/unread-count");
+        const countData = await countResponse.json();
+
+        document.getElementById("unreadCount").textContent = countData.count;
+
+        const list = document.getElementById("notificationList");
+
+        if (notifications.length === 0) {
+            list.innerHTML = "<p>No notifications yet.</p>";
+            return;
+        }
+
+        list.innerHTML = notifications.map(notification => `
+            <div class="notification-item">
+                <strong>${notification.title}</strong>
+                <p>${notification.message}</p>
+                <small>${notification.createdAt ? new Date(notification.createdAt).toLocaleString() : ""}</small>
+                ${notification.read
+                    ? "<p>Already read</p>"
+                    : `<button type="button" onclick="markNotificationRead(${notification.id})">Mark as read</button>`
+                }
+            </div>
+        `).join("");
+    } catch (error) {
+        console.error("Error loading notifications:", error);
+        document.getElementById("notificationList").innerHTML =
+            "<p>Could not load notifications. Check whether the backend is running.</p>";
+    }
+}
+
+async function markNotificationRead(id) {
+    try {
+        const response = await fetch(`/api/notifications/${id}/read`, {
+            method: "PUT"
+        });
+
+        if (!response.ok) {
+            throw new Error("Could not mark notification as read");
+        }
+
+        await loadNotifications();
+    } catch (error) {
+        console.error(error);
+        alert("Unable to mark notification as read.");
+    }
+}
+
+document.getElementById("notificationBell").addEventListener("click", () => {
+    const panel = document.getElementById("notificationPanel");
+    panel.hidden = !panel.hidden;
+
+    if (!panel.hidden) {
+        loadNotifications();
+    }
+});
+
+loadNotifications();
+
+</script>
+
+<!-- AI Career Assistant -->
+<div id="ai-assistant" style="max-width:600px; margin:30px auto; padding:20px; border:1px solid #ddd; border-radius:12px; font-family:Arial,sans-serif;">
+
+    <h2>🤖 AI Career Assistant</h2>
+    <p>Ask questions about Java, DSA and placement preparation.</p>
+
+    <div id="ai-chat-messages"
+         style="height:250px; overflow-y:auto; padding:12px; margin-bottom:12px; background:#f5f5f5; border-radius:8px;">
+        <p><strong>AI:</strong> Hi! How can I help you prepare for placements?</p>
+    </div>
+
+    <textarea id="ai-message"
+              placeholder="Ask your question..."
+              rows="3"
+              style="width:100%; box-sizing:border-box; padding:10px; margin-bottom:10px;"></textarea>
+
+    <button id="ai-send-button"
+            onclick="sendAiMessage()"
+            style="padding:10px 18px; cursor:pointer;">
+        Send Message
+    </button>
+
+</div>
+
+<script>
+    async function sendAiMessage() {
+        const input = document.getElementById("ai-message");
+        const messages = document.getElementById("ai-chat-messages");
+        const button = document.getElementById("ai-send-button");
+
+        const message = input.value.trim();
+
+        if (!message) {
+            alert("Please enter a question.");
+            return;
+        }
+
+        messages.innerHTML +=
+            "<p><strong>You:</strong> " + escapeAiHtml(message) + "</p>";
+
+        input.value = "";
+        button.disabled = true;
+        button.textContent = "Thinking...";
+
+        try {
+            const response = await fetch("/api/ai/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ message: message })
+            });
+
+            if (!response.ok) {
+                throw new Error("HTTP error: " + response.status);
+            }
+
+            const data = await response.json();
+
+
+const reply = document.createElement("div");
+reply.className = "ai-reply";
+
+const label = document.createElement("strong");
+label.textContent = "AI: ";
+
+const content = document.createElement("div");
+content.style.whiteSpace = "pre-wrap";
+content.style.lineHeight = "1.6";
+content.style.marginTop = "6px";
+content.textContent = data.reply || "No reply received.";
+
+reply.appendChild(label);
+reply.appendChild(content);
+messages.appendChild(reply);
+
+            messages.scrollTop = messages.scrollHeight;
+
+        } catch (error) {
+            const errorMessage = document.createElement("p");
+            errorMessage.textContent =
+                "Could not get an AI response. Please check that the server and Ollama are running.";
+            messages.appendChild(errorMessage);
+            console.error(error);
+
+        } finally {
+            button.disabled = false;
+            button.textContent = "Send Message";
+        }
+    }
+
+    function escapeAiHtml(text) {
+        const element = document.createElement("span");
+        element.textContent = text;
+        return element.innerHTML;
+    }
+</script>
+
+</body>
+</html>
